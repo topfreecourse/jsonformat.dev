@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Formatter - Validate, Beautify, Minify, and Repair JSON</title>
+    
+    <!-- SEO Tags for better search engine indexing -->
+    <meta name="description" content="A fast and easy-to-use online JSON Formatter. Validate, beautify, minify, and repair your JSON data directly in your browser.">
+    <meta name="keywords" content="JSON, Formatter, validator, beautifier, minifier, repair, online JSON tool, format JSON, validate JSON, JSON prettify">
+    <meta name="author" content="jsonformat.dev">
+    
+    <!-- Open Graph tags for social media sharing -->
+    <meta property="og:title" content="JSON Formatter - Validate, Beautify, Minify, and Repair JSON">
+    <meta property="og:description" content="A fast and easy-to-use online JSON Formatter. Validate, beautify, minify, and repair your JSON data directly in your browser.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.jsonformat.dev/">
+    <meta property="og:image" content="https://www.jsonformat.dev/images/og-image.jpg"> <!-- Replace with an actual image URL -->
+    
+    <!-- Canonical link to prevent duplicate content issues -->
+    <link rel="canonical" href="https://www.jsonformat.dev/">
+    
+    <!-- Google Tag Manager - Placeholder -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-XXXXXX');</script>
+    <!-- End Google Tag Manager -->
+    
+    <!-- Use Tailwind CSS for modern, responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for a dark theme and better readability */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117; /* Dark background */
+            color: #c9d1d9; /* Light text */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .main-content {
+            flex: 1;
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .textarea-container {
+            position: relative;
+        }
+        .textarea-container textarea {
+            min-height: 300px;
+            background-color: #161b22; /* Darker background for textareas */
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            resize: vertical;
+            line-height: 1.5; /* Improved line height for readability */
+        }
+        .textarea-container textarea.error-border {
+            border-color: #d22b2b;
+            box-shadow: 0 0 0 2px #d22b2b;
+        }
+        .message-box {
+            display: none;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+        }
+        .message-success {
+            background-color: #238636;
+            color: white;
+        }
+        .message-error {
+            background-color: #d22b2b;
+            color: white;
+        }
+        footer {
+            background-color: #161b22;
+            border-top: 1px solid #30363d;
+        }
+        footer a {
+            color: #58a6ff;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        /* Custom scrollbar for a polished look */
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: #161b22;
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 4px;
+        }
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: #444c56;
+        }
+    </style>
+    <script type="application/ld+json">
+    {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "JSON Formatter",
+    "url": "https://www.jsonformat.dev",
+    "applicationCategory": "DeveloperApplication",
+    "description": "An online JSON Formatter to validate, beautify, minify, and repair JSON data. Secure, fast, and 100% client-side.",
+    "browserRequirements": "Requires JavaScript. Works in modern web browsers.",
+    "operatingSystem": "All",
+    "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "USD"
+    },
+    "creator": {
+        "@type": "Organization",
+        "name": "JSONFormat.dev",
+        "url": "https://www.jsonformat.dev"
+    },
+    "inLanguage": "en"
+    }
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is a JSON Formatter?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A JSON Formatter organizes raw JSON data into a readable and indented structure, making it easier to view and debug."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is JSONFormat.dev secure for sensitive data?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. All processing happens locally in your browser. Your data is never uploaded or stored."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What can I do with JSONFormat.dev?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You can validate, format, minify, repair broken JSON, and even undo repairs—all in your browser."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens if I paste invalid JSON?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The tool will highlight the exact line and position of the error and optionally offer to repair the structure."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I format large or complex JSON files?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. JSONFormat.dev is designed to handle large JSON documents efficiently using browser-based processing."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does the tool support real-time validation?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The Live Mode option lets you validate and format JSON automatically as you type."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is JSONFormat.dev free to use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Absolutely. All features are completely free and available without registration."
+      }
+    }
+  ]
+}
+</script>
+
+
+</head>
+<body class="p-6">
+    <!-- Google Tag Manager (noscript) - Placeholder -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXX"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    
+    <header class="text-center mb-8">
+        <h1 class="text-4xl font-bold">JSON Formatter</h1>
+    </header>
+
+    <div class="main-content container mx-auto">
+        <!-- Main JSON Tool View -->
+        <div id="jsonToolView" class="block">
+            <!-- Main Flex Layout for Left, Middle, Right sections -->
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Left Section: Input -->
+                <div class="flex flex-col w-full lg:w-2/5">
+                    <h2 class="text-2xl font-semibold mb-4">Input JSON</h2>
+                    <div class="textarea-container flex-grow">
+                        <textarea id="jsonInput" class="w-full h-full p-4 text-base rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" placeholder='Enter your JSON here...
+{
+    "name": "John Doe",
+    "age": 30,
+    "isStudent": false,
+    "courses": [
+        "Math",
+        "Physics"
+    ],
+    "address": {
+        "street": "123 Main St",
+        "city": "Anytown"
+    }
+}'></textarea>
+                    </div>
+                </div>
+
+                <!-- Middle Section: Buttons and Ads -->
+                <div class="flex flex-col w-full lg:w-1/5 items-center justify-center space-y-4">
+                    <div class="flex flex-col w-full space-y-2">
+                        <h2 class="text-xl font-semibold text-center mb-2">Tools</h2>
+                        <button id="validateBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-md shadow-lg transition-colors w-full">
+                            Validate
+                        </button>
+                        <button id="beautifyBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md shadow-lg transition-colors w-full">
+                            Beautify
+                        </button>
+                        <button id="minifyBtn" class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded-md shadow-lg transition-colors w-full">
+                            Minify
+                        </button>
+                        <button id="repairBtn" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-md shadow-lg transition-colors w-full">
+                            Repair
+                        </button>
+                    </div>
+                    <div class="flex flex-col w-full space-y-2">
+                        <button id="uploadBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-lg transition-colors w-full">
+                            Upload File
+                        </button>
+                        <input type="file" id="fileInput" class="hidden" accept=".json">
+                        <button id="clearBtn" class="bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 px-4 rounded-md shadow-lg transition-colors w-full">
+                            Clear
+                        </button>
+                    </div>
+                    <div class="flex flex-col w-full space-y-2">
+                        <button id="undoBtn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md shadow-lg transition-colors w-full" disabled>
+                            Undo
+                        </button>
+                        <button id="redoBtn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md shadow-lg transition-colors w-full" disabled>
+                            Redo
+                        </button>
+                    </div>
+                    <div class="flex flex-col w-full space-y-2">
+                        <button id="downloadBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-lg transition-colors w-full">
+                            Download Output
+                        </button>
+                        <button id="copyBtn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md shadow-lg transition-colors w-full">
+                            Copy to Clipboard
+                        </button>
+                    </div>
+                    
+                    <!-- Advertisement Section -->
+                    <div class="w-full mt-8 p-4 bg-gray-800 rounded-md shadow-inner text-center">
+                        <p class="text-sm text-gray-400 font-semibold mb-2">Advertisement</p>
+                        <a href="#" class="block bg-white text-gray-900 font-bold py-2 px-4 rounded-md hover:bg-gray-200 transition-colors">
+                            JSON Formatter - Validate, Beautify, Minify, and Repair JSON
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Right Section: Output -->
+                <div class="flex flex-col w-full lg:w-2/5">
+                    <h2 class="text-2xl font-semibold mb-4">Output JSON</h2>
+                    <div class="textarea-container flex-grow">
+                        <textarea id="jsonOutput" class="w-full h-full p-4 text-base rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow" placeholder="Processed JSON will appear here..." readonly></textarea>
+                    </div>
+                </div>
+            </div>
+            <!-- Message/Status Box -->
+            <div id="messageBox" class="message-box mt-8"></div>
+            <div class="flex flex-col lg:flex-row gap-8"></div>
+                <section class="bg-900 text-gray-100 py-10 px-4" id="faqs">
+                    <div class="max-w-6xl mx-auto">
+                        <h2 class="text-2xl font-bold mb-6">Frequently Asked Questions</h2>
+                        <div class="space-y-4">
+                        <details class="bg-gray-800 p-4 rounded shadow">
+                            <summary class="font-semibold cursor-pointer">What is a JSON Formatter?</summary>
+                            <p class="mt-2 text-sm text-gray-300">
+                            A JSON Formatter improves readability of JSON by organizing it with proper indentation and line breaks.
+                            </p>
+                        </details>
+
+                        <details class="bg-gray-800 p-4 rounded shadow">
+                            <summary class="font-semibold cursor-pointer">Is JSONFormat.dev secure?</summary>
+                            <p class="mt-2 text-sm text-gray-300">
+                            Yes, all operations happen entirely within your browser. No data is sent, stored, or logged externally.
+                            </p>
+                        </details>
+
+                        <details class="bg-gray-800 p-4 rounded shadow">
+                            <summary class="font-semibold cursor-pointer">Can I fix broken or invalid JSON?</summary>
+                            <p class="mt-2 text-sm text-gray-300">
+                            Absolutely. The repair feature intelligently corrects common JSON formatting errors like missing brackets or quotes.
+                            </p>
+                        </details>
+
+                        <details class="bg-gray-800 p-4 rounded shadow">
+                            <summary class="font-semibold cursor-pointer">Does the tool have an undo feature?</summary>
+                            <p class="mt-2 text-sm text-gray-300">
+                            Yes. After formatting or repairing JSON, you can click "Undo" to restore your previous input.
+                            </p>
+                        </details>
+
+                        <details class="bg-gray-800 p-4 rounded shadow">
+                            <summary class="font-semibold cursor-pointer">What does Live Mode do?</summary>
+                            <p class="mt-2 text-sm text-gray-300">
+                            Live Mode validates and formats your JSON instantly as you type—ideal for quick debugging or real-time editing.
+                            </p>
+                        </details>
+
+                        <details class="bg-gray-800 p-4 rounded shadow">
+                            <summary class="font-semibold cursor-pointer">Can I upload a JSON file instead of pasting code?</summary>
+                            <p class="mt-2 text-sm text-gray-300">
+                            Yes. You can upload `.json` files directly and process them just like text input.
+                            </p>
+                        </details>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-8 py-4 text-center">
+        <nav class="flex flex-wrap justify-center space-x-4">
+           <a href="index.html">Home</a>
+            <a href="about.html">About Us</a>
+            <a href="contact.html">Contact</a>
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="terms.html">Terms</a>
+        </nav>
+         <p class="mt-2 text-sm text-gray-500">&copy; 2025 JSONFormat.dev. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Get references to all the necessary DOM elements
+        const jsonInput = document.getElementById('jsonInput');
+        const jsonOutput = document.getElementById('jsonOutput');
+        const validateBtn = document.getElementById('validateBtn');
+        const beautifyBtn = document.getElementById('beautifyBtn');
+        const minifyBtn = document.getElementById('minifyBtn');
+        const repairBtn = document.getElementById('repairBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const fileInput = document.getElementById('fileInput');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const undoBtn = document.getElementById('undoBtn');
+        const redoBtn = document.getElementById('redoBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const messageBox = document.getElementById('messageBox');
+        
+        // View-related elements
+        const jsonToolView = document.getElementById('jsonToolView');
+        const aboutView = document.getElementById('aboutView');
+        const contactView = document.getElementById('contactView');
+        const privacyView = document.getElementById('privacyView');
+        const termsView = document.getElementById('termsView');
+        const aboutLink = document.getElementById('aboutLink');
+        const contactLink = document.getElementById('contactLink');
+        const privacyLink = document.getElementById('privacyLink');
+        const termsLink = document.getElementById('termsLink');
+
+        // State for undo/redo
+        let history = [''];
+        let historyIndex = 0;
+
+        /**
+         * Debounce function to limit how often a function can run.
+         * @param {function} func The function to debounce.
+         * @param {number} delay The delay in milliseconds.
+         * @returns {function} The debounced function.
+         */
+        const debounce = (func, delay) => {
+            let timeoutId;
+            return (...args) => {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    func.apply(this, args);
+                }, delay);
+            };
+        };
+
+        /**
+         * Updates the history for undo/redo.
+         */
+        function updateHistory() {
+            // Check if the current value is different from the last history state
+            if (jsonInput.value !== history[historyIndex]) {
+                // If we are not at the end of history, trim the history array
+                if (historyIndex < history.length - 1) {
+                    history = history.slice(0, historyIndex + 1);
+                }
+                history.push(jsonInput.value);
+                historyIndex = history.length - 1;
+            }
+            updateUndoRedoButtons();
+        }
+
+        /**
+         * Updates the disabled state of the undo/redo buttons.
+         */
+        function updateUndoRedoButtons() {
+            undoBtn.disabled = historyIndex <= 0;
+            redoBtn.disabled = historyIndex >= history.length - 1;
+        }
+
+        /**
+         * Displays a message in the status box.
+         * @param {string} message The message to display.
+         * @param {string} type The type of message ('success' or 'error').
+         */
+        function showMessage(message, type) {
+            messageBox.textContent = message;
+            messageBox.className = `message-box ${type === 'success' ? 'message-success' : 'message-error'}`;
+            messageBox.style.display = 'block';
+        }
+
+        /**
+         * Clears the status message box and error highlight.
+         */
+        function clearMessage() {
+            messageBox.style.display = 'none';
+            messageBox.textContent = '';
+            jsonInput.classList.remove('error-border');
+        }
+
+        /**
+         * Clears both input and output textareas.
+         */
+        function clearEditors() {
+            jsonInput.value = '';
+            jsonOutput.value = '';
+            clearMessage();
+            history = [''];
+            historyIndex = 0;
+            updateUndoRedoButtons();
+        }
+
+        /**
+         * Validates the JSON content in the input textarea.
+         * @returns {boolean} True if the JSON is valid, false otherwise.
+         */
+        function validateJson() {
+            const jsonString = jsonInput.value.trim();
+            if (!jsonString) {
+                showMessage('Input cannot be empty.', 'error');
+                jsonInput.classList.add('error-border');
+                return false;
+            }
+            try {
+                JSON.parse(jsonString);
+                showMessage('JSON is valid!', 'success');
+                jsonInput.classList.remove('error-border');
+                return true;
+            } catch (e) {
+                showMessage(`Validation Error: ${e.message}`, 'error');
+                jsonInput.classList.add('error-border');
+                return false;
+            }
+        }
+
+        /**
+         * Beautifies the JSON content with 4-space indentation.
+         */
+        function beautifyJson() {
+            clearMessage();
+            const jsonString = jsonInput.value.trim();
+            if (!jsonString) {
+                jsonOutput.value = '';
+                return;
+            }
+            try {
+                const parsedJson = JSON.parse(jsonString);
+                jsonOutput.value = JSON.stringify(parsedJson, null, 4);
+                jsonInput.classList.remove('error-border');
+            } catch (e) {
+                jsonInput.classList.add('error-border');
+                jsonOutput.value = 'Invalid JSON: ' + e.message;
+            }
+        }
+
+        /**
+         * Minifies the JSON content by removing all whitespace.
+         */
+        function minifyJson() {
+            clearMessage();
+            const jsonString = jsonInput.value.trim();
+            if (!jsonString) {
+                showMessage('Input cannot be empty.', 'error');
+                return;
+            }
+            try {
+                const parsedJson = JSON.parse(jsonString);
+                jsonOutput.value = JSON.stringify(parsedJson);
+                showMessage('JSON has been minified.', 'success');
+            } catch (e) {
+                showMessage(`Minify Error: ${e.message}`, 'error');
+            }
+        }
+
+        /**
+         * Attempts to repair common JSON syntax errors.
+         */
+        function repairJson() {
+            clearMessage();
+            let jsonString = jsonInput.value.trim();
+            if (!jsonString) {
+                showMessage('Input cannot be empty.', 'error');
+                return;
+            }
+
+            // First, try to parse the JSON as is. If it's valid, we don't need to do anything.
+            try {
+                const parsedJson = JSON.parse(jsonString);
+                jsonOutput.value = JSON.stringify(parsedJson, null, 4);
+                showMessage('JSON was already valid and has been beautified.', 'success');
+                return;
+            } catch (e) {
+                // If parsing fails, proceed with the repair logic.
+            }
+
+            try {
+                // Step 1: Remove BOM (Byte Order Mark) if it exists.
+                if (jsonString.charCodeAt(0) === 0xFEFF) {
+                    jsonString = jsonString.substring(1);
+                }
+
+                // Step 2: Replace single quotes with double quotes
+                jsonString = jsonString.replace(/'/g, '"');
+
+                // Step 3: Quote unquoted keys. This regex finds words followed by a colon
+                jsonString = jsonString.replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z_$0-9]*)\s*:/g, '$1"$2":');
+
+                // Step 4: Handle unescaped newlines and other special characters within strings
+                jsonString = jsonString.replace(/"(.*?)"/gs, (match, p1) => {
+                    return `"${p1.replace(/\n/g, '\\n').replace(/\t/g, '\\t')}"`;
+                });
+
+                // Step 5: Remove trailing commas from objects and arrays
+                jsonString = jsonString.replace(/,(\s*[}\]])/g, '$1');
+
+                // Step 6: Remove duplicate commas
+                jsonString = jsonString.replace(/,,/g, ',');
+                
+                // Step 7: Attempt to parse the repaired string
+                const repairedJson = JSON.parse(jsonString);
+                jsonOutput.value = JSON.stringify(repairedJson, null, 4);
+                showMessage('JSON has been repaired and beautified. Please review the output carefully!', 'success');
+                jsonInput.classList.remove('error-border');
+            } catch (e) {
+                // If repair still fails, show an error message
+                showMessage(`Repair failed. Could not fix the JSON. Error: ${e.message}`, 'error');
+                jsonInput.classList.add('error-border');
+            }
+        }
+
+        /**
+         * Handles the file upload process.
+         */
+        function uploadFile() {
+            clearMessage();
+            const file = fileInput.files[0];
+            if (!file) {
+                showMessage('Please select a file to upload.', 'error');
+                fileInput.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const fileContent = event.target.result;
+                jsonInput.value = fileContent;
+                showMessage('File uploaded successfully. You can now process the JSON.', 'success');
+                beautifyJson(); // Beautify after upload
+                updateHistory();
+            };
+            reader.onerror = function() {
+                showMessage('Error reading file. Please try again.', 'error');
+            };
+            reader.readAsText(file);
+
+            fileInput.value = '';
+        }
+        
+        /**
+         * Downloads the content of the output textarea as a JSON file.
+         */
+        function downloadOutput() {
+            const outputText = jsonOutput.value;
+            if (!outputText || outputText.startsWith('Invalid JSON')) {
+                showMessage('Output is empty or invalid. Process some valid JSON first.', 'error');
+                return;
+            }
+            
+            // Create a Blob with the JSON data
+            const blob = new Blob([outputText], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            // Create a temporary link element
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'output.json';
+            document.body.appendChild(a);
+            
+            // Programmatically click the link to trigger the download
+            a.click();
+            
+            // Clean up the temporary link and URL
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showMessage('Output downloaded as output.json', 'success');
+        }
+
+        /**
+         * Copies the output text to the user's clipboard.
+         */
+        function copyToClipboard() {
+            const outputText = jsonOutput.value;
+            if (!outputText || outputText.startsWith('Invalid JSON')) {
+                showMessage('Output is empty or invalid. Nothing to copy.', 'error');
+                return;
+            }
+
+            try {
+                // This is the preferred method, but may not work in all environments.
+                navigator.clipboard.writeText(outputText)
+                    .then(() => showMessage('Output copied to clipboard!', 'success'))
+                    .catch(() => {
+                        // Fallback method for environments where navigator.clipboard is not available
+                        const tempTextarea = document.createElement('textarea');
+                        tempTextarea.value = outputText;
+                        document.body.appendChild(tempTextarea);
+                        tempTextarea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(tempTextarea);
+                        showMessage('Output copied to clipboard!', 'success');
+                    });
+            } catch (error) {
+                // execCommand is the only reliable option in some environments
+                const tempTextarea = document.createElement('textarea');
+                tempTextarea.value = outputText;
+                document.body.appendChild(tempTextarea);
+                tempTextarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempTextarea);
+                showMessage('Output copied to clipboard!', 'success');
+            }
+        }
+
+        // Undo/Redo functions
+        function undo() {
+            if (historyIndex > 0) {
+                historyIndex--;
+                jsonInput.value = history[historyIndex];
+                beautifyJson();
+                updateUndoRedoButtons();
+            }
+        }
+        
+        function redo() {
+            if (historyIndex < history.length - 1) {
+                historyIndex++;
+                jsonInput.value = history[historyIndex];
+                beautifyJson();
+                updateUndoRedoButtons();
+            }
+        }
+
+        // View management function
+        function setView(viewId) {
+            const views = [jsonToolView, aboutView, contactView, privacyView, termsView];
+            views.forEach(view => {
+                view.classList.add('hidden');
+            });
+            document.getElementById(viewId).classList.remove('hidden');
+        }
+
+
+        // Event Listeners for buttons
+        validateBtn.addEventListener('click', validateJson);
+        beautifyBtn.addEventListener('click', beautifyJson);
+        minifyBtn.addEventListener('click', minifyJson);
+        repairBtn.addEventListener('click', repairJson);
+        uploadBtn.addEventListener('click', () => fileInput.click()); // Trigger the hidden file input
+        fileInput.addEventListener('change', uploadFile);
+        downloadBtn.addEventListener('click', downloadOutput);
+        copyBtn.addEventListener('click', copyToClipboard);
+        undoBtn.addEventListener('click', undo);
+        redoBtn.addEventListener('click', redo);
+        clearBtn.addEventListener('click', clearEditors);
+
+        // Live sync and error highlighting
+        jsonInput.addEventListener('input', debounce(() => {
+            beautifyJson();
+            updateHistory();
+        }, 300));
+        
+        // Initial state of history
+        updateHistory();
+
+        // Footer links
+        aboutLink.addEventListener('click', (e) => { e.preventDefault(); setView('aboutView'); });
+        contactLink.addEventListener('click', (e) => { e.preventDefault(); setView('contactView'); });
+        privacyLink.addEventListener('click', (e) => { e.preventDefault(); setView('privacyView'); });
+        termsLink.addEventListener('click', (e) => { e.preventDefault(); setView('termsView'); });
+    </script>
+</body>
+</html>
